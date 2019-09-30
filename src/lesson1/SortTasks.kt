@@ -2,6 +2,13 @@
 
 package lesson1
 
+import java.io.File
+import java.lang.Exception
+import java.lang.IllegalArgumentException
+import java.text.DateFormat
+import java.text.SimpleDateFormat
+import java.util.*
+
 /**
  * Сортировка времён
  *
@@ -33,7 +40,27 @@ package lesson1
  * В случае обнаружения неверного формата файла бросить любое исключение.
  */
 fun sortTimes(inputName: String, outputName: String) {
-    TODO()
+    val dateList = File(inputName).readLines().toMutableList()
+    val result = File(outputName).bufferedWriter()
+
+    // val regex = Regex("""((1[0-2]|0?[1-9]):([0-5][0-9]):([0-5][0-9]) ?([AaPp][Mm]))""")
+    val dateFormat: DateFormat = SimpleDateFormat("hh:mm:ss a", Locale.US)
+    val formattedDates = mutableListOf<Date>()
+
+    try {
+        for (line in dateList) {
+            val date: Date = dateFormat.parse(line)
+            formattedDates.add(date)
+        }
+    } catch (e: Exception) {
+        throw IllegalArgumentException("Wrong argument")
+    }
+
+    formattedDates.sort()
+
+    for (date in formattedDates) result.write(dateFormat.format(date) + "\n")
+
+    result.close()
 }
 
 /**
@@ -63,7 +90,25 @@ fun sortTimes(inputName: String, outputName: String) {
  * В случае обнаружения неверного формата файла бросить любое исключение.
  */
 fun sortAddresses(inputName: String, outputName: String) {
-    TODO()
+    val lines = File(inputName).readLines().toMutableList()
+    val addressMap = sortedMapOf<String, SortedSet<String>>()
+    val result = File(outputName).bufferedWriter()
+    val regex = Regex("""[А-ЯЁ-][А-Яа-яё-]+ [А-ЯЁ-][А-Яа-яё-]+ - [А-ЯЁ-][А-Яа-яё-]+ \d+""")
+
+    for (line in lines) {
+        if (!line.matches(regex)) throw IllegalArgumentException("Wrong argument: $line")
+
+        val splitLine = line.split(" - ")
+        val name = splitLine[0]
+        val address = splitLine[1]
+
+        if (addressMap.containsKey(address)) addressMap.getValue(address).add(name)
+        else addressMap[address] = sortedSetOf(name)
+    }
+
+    for ((address, name) in addressMap) result.write("$address - ${name.joinToString(", ")}\n")
+
+    result.close()
 }
 
 /**
