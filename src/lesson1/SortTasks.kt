@@ -91,22 +91,26 @@ fun sortTimes(inputName: String, outputName: String) {
  */
 fun sortAddresses(inputName: String, outputName: String) {
     val lines = File(inputName).readLines().toMutableList()
-    val addressMap = sortedMapOf<String, SortedSet<String>>()
+    val addressMap = mutableMapOf<Pair<String, Int>, SortedSet<String>>()
     val result = File(outputName).bufferedWriter()
-    val regex = Regex("""[А-ЯЁ-][А-Яа-яё-]+ [А-ЯЁ-][А-Яа-яё-]+ - [А-ЯЁ-][А-Яа-яё-]+ \d+""")
+    val regex = Regex("""[А-ЯЁA-Z-][А-ЯЁA-Zа-яёa-z-]+ [А-ЯЁA-Z-][А-ЯЁA-Zа-яёa-z-]+ - [А-ЯЁA-Z-][А-ЯЁA-Zа-яёa-z-]+ \d+""")
 
     for (line in lines) {
-        if (!line.matches(regex)) throw IllegalArgumentException("Wrong argument: $line")
+        if (!line.trim().matches(regex)) throw IllegalArgumentException("Wrong argument: $line")
 
         val splitLine = line.split(" - ")
         val name = splitLine[0]
-        val address = splitLine[1]
+        val address = splitLine[1].split(" ")
+        val street = address[0]
+        val house = address[1].toInt()
 
-        if (addressMap.containsKey(address)) addressMap.getValue(address).add(name)
-        else addressMap[address] = sortedSetOf(name)
+        if (addressMap.containsKey(street to house)) addressMap.getValue(street to house).add(name)
+        else addressMap[street to house] = sortedSetOf(name)
     }
 
-    for ((address, name) in addressMap) result.write("$address - ${name.joinToString(", ")}\n")
+    val sortedMap = addressMap.toSortedMap(compareBy<Pair<String, Int>> { it.first }.thenBy { it.second })
+
+    for ((address, name) in sortedMap) result.write("${address.first} ${address.second} - ${name.joinToString(", ")}\n")
 
     result.close()
 }
