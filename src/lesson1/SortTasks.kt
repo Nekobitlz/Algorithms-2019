@@ -146,7 +146,17 @@ fun sortAddresses(inputName: String, outputName: String) {
  * 121.3
  */
 fun sortTemperatures(inputName: String, outputName: String) {
-    TODO()
+    val lines = File(inputName).readLines().toMutableList()
+    val doubleTemps = mutableListOf<Double>()
+    val result = File(outputName).bufferedWriter()
+
+    for (temp in lines) doubleTemps.add(temp.toDouble())
+
+    doubleTemps.sort();
+
+    for (temp in doubleTemps) result.write("$temp\n")
+
+    result.close()
 }
 
 /**
@@ -179,7 +189,33 @@ fun sortTemperatures(inputName: String, outputName: String) {
  * 2
  */
 fun sortSequence(inputName: String, outputName: String) {
-    TODO()
+    val lines = File(inputName).readLines().toMutableList()
+    val result = File(outputName).bufferedWriter()
+    val repetitions = mutableMapOf<String, Int>()
+    val sequence = mutableListOf<String>()
+    val maxSequence = mutableListOf<String>()
+    var minOfMax = Int.MAX_VALUE
+
+    for (line in lines)
+        if (repetitions.containsKey(line)) repetitions[line] = repetitions[line]!! + 1
+        else repetitions[line] = 1
+
+    val max = repetitions.maxBy { (_, v) -> v }!!.value
+
+    for (line in repetitions) {
+        if (line.value == max && line.key.toInt() < minOfMax) {
+            minOfMax = line.key.toInt()
+        }
+    }
+
+    for (line in lines)
+        if (line == minOfMax.toString()) maxSequence.add(line)
+        else sequence.add(line)
+
+    sequence.addAll(maxSequence)
+    for (line in sequence) result.write("$line\n")
+
+    result.close()
 }
 
 /**
@@ -197,6 +233,8 @@ fun sortSequence(inputName: String, outputName: String) {
  * Результат: second = [1 3 4 9 9 13 15 20 23 28]
  */
 fun <T : Comparable<T>> mergeArrays(first: Array<T>, second: Array<T?>) {
-    TODO()
+    for (i in 0 until first.size) second[i] = first[i]
+
+    second.sort()
 }
 
