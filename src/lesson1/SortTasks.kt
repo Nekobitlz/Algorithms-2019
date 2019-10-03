@@ -38,12 +38,14 @@ import java.util.*
  * 07:56:14 PM
  *
  * В случае обнаружения неверного формата файла бросить любое исключение.
+ *
+ * Трудоемкость: О(n + n * log(n) + n) = O(n * log(n))
+ * Ресурсоемкость: O(n + n) = O(n)
  */
 fun sortTimes(inputName: String, outputName: String) {
     val dateList = File(inputName).readLines().toMutableList()
     val result = File(outputName).bufferedWriter()
 
-    // val regex = Regex("""((1[0-2]|0?[1-9]):([0-5][0-9]):([0-5][0-9]) ?([AaPp][Mm]))""")
     val dateFormat: DateFormat = SimpleDateFormat("hh:mm:ss a", Locale.US)
     val formattedDates = mutableListOf<Date>()
 
@@ -88,6 +90,9 @@ fun sortTimes(inputName: String, outputName: String) {
  * Садовая 5 - Сидоров Петр, Сидорова Мария
  *
  * В случае обнаружения неверного формата файла бросить любое исключение.
+ *
+ * Трудоемкость: О(n)
+ * Ресурсоемкость: O(n + n) = O(n)
  */
 fun sortAddresses(inputName: String, outputName: String) {
     val lines = File(inputName).readLines().toMutableList()
@@ -144,6 +149,9 @@ fun sortAddresses(inputName: String, outputName: String) {
  * 24.7
  * 99.5
  * 121.3
+ *
+ * Трудоемкость: О(n + n * log(n) + n) = O(n * log(n))
+ * Ресурсоемкость: O(n + n) = O(n)
  */
 fun sortTemperatures(inputName: String, outputName: String) {
     val lines = File(inputName).readLines().toMutableList()
@@ -152,7 +160,7 @@ fun sortTemperatures(inputName: String, outputName: String) {
 
     for (temp in lines) doubleTemps.add(temp.toDouble())
 
-    doubleTemps.sort();
+    doubleTemps.sort()
 
     for (temp in doubleTemps) result.write("$temp\n")
 
@@ -187,6 +195,9 @@ fun sortTemperatures(inputName: String, outputName: String) {
  * 2
  * 2
  * 2
+ *
+ * Трудоемкость: О(n * 1 + n + n + n + n + n) = O(n) , т.к. containsKey обычно работает за O(1)
+ * Ресурсоемкость: O(n + n + n + n) = O(n)
  */
 fun sortSequence(inputName: String, outputName: String) {
     val lines = File(inputName).readLines().toMutableList()
@@ -231,6 +242,9 @@ fun sortSequence(inputName: String, outputName: String) {
  * second = [null null null null null 1 3 9 13 18 23]
  *
  * Результат: second = [1 3 4 9 9 13 15 20 23 28]
+ *
+ * Трудоемкость: О(n + n * log(n)) = O(n * log(n))
+ * Ресурсоемкость: O(n)
  */
 fun <T : Comparable<T>> mergeArrays(first: Array<T>, second: Array<T?>) {
     for (i in 0 until first.size) second[i] = first[i]
