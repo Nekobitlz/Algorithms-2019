@@ -91,7 +91,7 @@ fun sortTimes(inputName: String, outputName: String) {
  *
  * В случае обнаружения неверного формата файла бросить любое исключение.
  *
- * Трудоемкость: О(n)
+ * Трудоемкость: О(n + k + n) = O(n + k), где k - сложность toSortedMap()
  * Ресурсоемкость: O(n + n) = O(n)
  */
 fun sortAddresses(inputName: String, outputName: String) {
