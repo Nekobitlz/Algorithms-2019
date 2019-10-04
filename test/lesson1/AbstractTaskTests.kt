@@ -9,7 +9,7 @@ import java.util.*
 import kotlin.math.abs
 import kotlin.system.measureNanoTime
 import kotlin.test.assertEquals
-import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 abstract class AbstractTaskTests : AbstractFileTests() {
 
@@ -65,15 +65,17 @@ abstract class AbstractTaskTests : AbstractFileTests() {
         }
         try {
             sortTimes("input/time_in5.txt", "temp.txt")
-        } catch (e: IllegalArgumentException) {
-            assertEquals("Wrong argument", e.message)
+            assertTrue(false, "Test failed, exception expected")
+        } catch (e: Exception) {
+            assertTrue(true, "Test passed, expected exception received")
         } finally {
             File("temp.txt").delete()
         }
         try {
             sortTimes("input/time_in6.txt", "temp.txt")
-        } catch (e: IllegalArgumentException) {
-            assertEquals("Wrong argument", e.message)
+            assertTrue(false, "Test failed, exception expected")
+        } catch (e: Exception) {
+            assertTrue(true, "Test passed, expected exception received")
         } finally {
             File("temp.txt").delete()
         }
@@ -118,18 +120,18 @@ abstract class AbstractTaskTests : AbstractFileTests() {
             File("temp.txt").delete()
         }
         try {
-            sortTimes("input/addr_in5.txt", "temp.txt")
-            assertFalse(true)
+            sortAddresses("input/addr_in5.txt", "temp.txt")
+            assertTrue(false, "Test failed, exception expected")
         } catch (e: IllegalArgumentException) {
-            assertEquals("Wrong argument", e.message)
+            assertEquals("Wrong argument", e.message, "Test passed, expected exception received")
         } finally {
             File("temp.txt").delete()
         }
         try {
-            sortTimes("input/addr_in6.txt", "temp.txt")
-            assertFalse(true)
+            sortAddresses("input/addr_in6.txt", "temp.txt")
+            assertTrue(false, "Test failed, exception expected")
         } catch (e: IllegalArgumentException) {
-            assertEquals("Wrong argument", e.message)
+            assertEquals("Wrong argument", e.message, "Test passed, expected exception received")
         } finally {
             File("temp.txt").delete()
         }
