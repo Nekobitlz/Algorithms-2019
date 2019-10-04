@@ -101,7 +101,7 @@ fun sortAddresses(inputName: String, outputName: String) {
     val regex = Regex("""[А-ЯЁA-Z-][А-ЯЁA-Zа-яёa-z-]+ [А-ЯЁA-Z-][А-ЯЁA-Zа-яёa-z-]+ - [А-ЯЁA-Z-][А-ЯЁA-Zа-яёa-z-]+ \d+""")
 
     for (line in lines) {
-        if (!line.trim().matches(regex)) throw IllegalArgumentException("Wrong argument: $line")
+        if (!line.matches(regex)) throw IllegalArgumentException("Wrong argument")
 
         val splitLine = line.split(" - ")
         val name = splitLine[0]
@@ -202,26 +202,31 @@ fun sortTemperatures(inputName: String, outputName: String) {
 fun sortSequence(inputName: String, outputName: String) {
     val lines = File(inputName).readLines().toMutableList()
     val result = File(outputName).bufferedWriter()
-    val repetitions = mutableMapOf<String, Int>()
-    val sequence = mutableListOf<String>()
-    val maxSequence = mutableListOf<String>()
+    val repetitions = mutableMapOf<Int, Int>()
+    val sequence = mutableListOf<Int>()
+    val maxSequence = mutableListOf<Int>()
     var minOfMax = Int.MAX_VALUE
 
-    for (line in lines)
-        if (repetitions.containsKey(line)) repetitions[line] = repetitions[line]!! + 1
-        else repetitions[line] = 1
+    for (line in lines) {
+        val digit = line.toInt()
+
+        if (repetitions.containsKey(digit)) repetitions[digit] = repetitions[digit]!! + 1
+        else repetitions[digit] = 1
+    }
 
     val max = repetitions.maxBy { (_, v) -> v }!!.value
 
     for (line in repetitions) {
-        if (line.value == max && line.key.toInt() < minOfMax) {
-            minOfMax = line.key.toInt()
+        if (line.value == max && line.key < minOfMax) {
+            minOfMax = line.key
         }
     }
 
-    for (line in lines)
-        if (line == minOfMax.toString()) maxSequence.add(line)
-        else sequence.add(line)
+    for (line in lines) {
+        val digit = line.toInt()
+        if (digit == minOfMax) maxSequence.add(digit)
+        else sequence.add(digit)
+    }
 
     sequence.addAll(maxSequence)
     for (line in sequence) result.write("$line\n")
