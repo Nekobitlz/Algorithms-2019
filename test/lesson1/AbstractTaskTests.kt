@@ -186,12 +186,12 @@ abstract class AbstractTaskTests : AbstractFileTests() {
                 "temp.txt",
                 """
                     -1.0
-                    -0.0
                     0.0
                     0.0
                     0.0
                     0.0
-                    1.0E-6
+                    0.0
+                    0.0
                 """.trimIndent()
             )
         } finally {
@@ -199,7 +199,15 @@ abstract class AbstractTaskTests : AbstractFileTests() {
         }
         try {
             sortTemperatures("input/temp_in3.txt", "temp.txt")
-            assertFileContent("temp.txt", " ")
+            assertFileContent("temp.txt", "")
+        } finally {
+            File("temp.txt").delete()
+        }
+        try {
+            sortTemperatures("input/temp_in4.txt", "temp.txt")
+            assertTrue(false, "Test failed, exception expected")
+        } catch (e: IllegalArgumentException) {
+            assertEquals("Wrong argument", e.message, "Test passed, expected exception received")
         } finally {
             File("temp.txt").delete()
         }
@@ -415,6 +423,12 @@ abstract class AbstractTaskTests : AbstractFileTests() {
         } finally {
             File("temp.txt").delete()
         }
+        try {
+            sortSequence("input/seq_in9.txt", "temp.txt")
+            assertFileContent("temp.txt", "")
+        } finally {
+            File("temp.txt").delete()
+        }
 
         fun testGeneratedSequence(totalSize: Int, answerSize: Int): PerfResult<Unit> {
             try {
@@ -469,9 +483,17 @@ abstract class AbstractTaskTests : AbstractFileTests() {
         mergeArrays(arrayOf(1, 1, 1, 1, 1, 1), result1)
         assertArrayEquals(arrayOf(1, 1, 1, 1, 1, 1, 1), result1)
 
-        val result2 = arrayOf(null, -1, -2, -3, -4)
-        mergeArrays(arrayOf(-6), result2)
-        assertArrayEquals(arrayOf(-6, -4, -3, -2, -1), result2)
+        val result2 = arrayOf(null, null, 0.0, 0.5, 2.5, 3.0, 9.4)
+        mergeArrays(arrayOf(0.2, 9.4), result2)
+        assertArrayEquals(arrayOf(0.0, 0.2, 0.5, 2.5, 3.0, 9.4, 9.4), result2)
+
+        val result3 = arrayOf(null, null, "", "!!!", "O", "alpha", "beta", "omega", "teta")
+        mergeArrays(arrayOf("abc", "абракадабра"), result3)
+        assertArrayEquals(arrayOf("", "!!!", "O", "abc", "alpha", "beta", "omega", "teta", "абракадабра"), result3)
+
+        val result4 = arrayOf(null, null, null, -6, -4, -3)
+        mergeArrays(arrayOf(-1, 0, 1), result4)
+        assertArrayEquals(arrayOf(-6, -4, -3, -1, 0, 1), result4)
 
         fun testGeneratedArrays(
             firstSize: Int,
