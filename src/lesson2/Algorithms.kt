@@ -27,23 +27,26 @@ import java.io.File
  * Например, для приведённого выше файла результат должен быть Pair(3, 4)
  *
  * В случае обнаружения неверного формата файла бросить любое исключение.
+ *
+ * Трудоемкость: O(n + n) = O(n)
+ * Ресурсоемкость: O(n)
  */
 fun optimizeBuyAndSell(inputName: String): Pair<Int, Int> {
     val lines = File(inputName).readLines()
-    var result: Pair<Int, Int> = 0 to 0
+    var result: Pair<Int, Int> = 1 to 2
     val stocks = mutableListOf<Int>()
-    var max = Int.MIN_VALUE
 
     for (line in lines) stocks.add(line.toInt())
 
-    for (i in 0 until stocks.size) {
-        for (j in i + 1 until stocks.size) {
-            val diff = stocks[j] - stocks[i]
+    var max = -1
+    var minIndex = 0
 
-            if (diff > max) {
-                max = diff
-                result = i + 1 to j + 1
-            }
+    for (i in 1 until stocks.size) {
+        if (stocks[i] - stocks[minIndex] > max) {
+            result = minIndex + 1 to i + 1
+            max = stocks[i] - stocks[minIndex]
+        } else {
+            if (stocks[i] < stocks[minIndex]) minIndex = i
         }
     }
 
