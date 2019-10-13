@@ -101,9 +101,32 @@ fun optimizeBuyAndSell(inputName: String): Pair<Int, Int> {
  *
  * Общий комментарий: решение из Википедии для этой задачи принимается,
  * но приветствуется попытка решить её самостоятельно.
+ *
+ * Трудоемкость: O(n + n) = O(n)
+ * Ресурсоемкость: O(n)
  */
 fun josephTask(menNumber: Int, choiceInterval: Int): Int {
-    TODO()
+    var tempPos = choiceInterval - 1
+    val people = mutableListOf<Int>()
+
+    for (i in 0 until menNumber) {
+        people.add(i, i + 1)
+    }
+
+    var iteration = menNumber - 1
+
+    while (iteration > 0) {
+        people.removeAt(tempPos)
+        tempPos += choiceInterval - 1
+
+        if (tempPos > people.size - 1) {
+            tempPos %= people.size
+        }
+
+        iteration--
+    }
+
+    return people[0]
 }
 
 /**
@@ -116,9 +139,29 @@ fun josephTask(menNumber: Int, choiceInterval: Int): Int {
  * При сравнении подстрок, регистр символов *имеет* значение.
  * Если имеется несколько самых длинных общих подстрок одной длины,
  * вернуть ту из них, которая встречается раньше в строке first.
+ *
+ * Трудоемкость: O(first.length * second.length)
+ * Ресурсоемкость: O(first.length * second.length)
  */
 fun longestCommonSubstring(first: String, second: String): String {
-    TODO()
+    var maxLength = 0
+    var endIndex = first.length
+    val lengths = Array(first.length + 1) { IntArray(second.length + 1) }
+
+    for (i in 1..first.length) {
+        for (j in 1..second.length) {
+            if (first[i - 1] == second[j - 1]) {
+                lengths[i][j] = lengths[i - 1][j - 1] + 1
+
+                if (lengths[i][j] > maxLength) {
+                    maxLength = lengths[i][j]
+                    endIndex = i
+                }
+            }
+        }
+    }
+
+    return first.substring(endIndex - maxLength, endIndex)
 }
 
 /**
@@ -160,7 +203,66 @@ fun calcPrimesNumber(limit: Int): Int {
  * Все слова и буквы -- русские или английские, прописные.
  * В файле буквы разделены пробелами, строки -- переносами строк.
  * Остальные символы ни в файле, ни в словах не допускаются.
+ *
+ * Трудоемкость: O(n * m * words.size * word.length) = O(n * m)
+ * Ресурсоемкость: O(n * m + words.length + words.length + n * m) = O(n * m)
  */
 fun baldaSearcher(inputName: String, words: Set<String>): Set<String> {
-    TODO()
+    val lines = File(inputName).readLines()
+    val result = mutableSetOf<String>()
+    val matrix = mutableListOf<List<Char>>()
+    val wordsSet = words.toMutableSet()
+
+    for (i in 0 until lines.size) {
+        matrix.add(lines[i].split(" ")
+            .filter { it != "" }
+            .map { it[0] }
+        )
+    }
+
+    for (y in 0 until matrix.size) {
+        for (x in 0 until matrix[y].size) {
+            for (word in wordsSet) {
+                if (matrix[y][x] == word[0] && matrix.containsWord(word.substring(2), word[1], Pair(x, y)))
+                    result.add(word)
+            }
+
+            wordsSet.removeAll(result)
+            if (wordsSet.isEmpty()) return result
+        }
+    }
+
+    return result
+}
+
+fun List<List<Char>>.containsWord(
+    word: String,
+    char: Char,
+    position: Pair<Int, Int>
+): Boolean {
+    val matrix = this
+    val moves = listOf(Direction.UP, Direction.DOWN, Direction.LEFT, Direction.RIGHT)
+
+    for (move in moves) {
+        val x = move.position.first + position.first
+        val y = move.position.second + position.second
+
+        if (x >= 0 && x < matrix[position.second].size &&
+            y >= 0 && y < matrix.size && matrix[y][x] == char
+        ) {
+            when {
+                word.isEmpty() -> return true
+                matrix.containsWord(word.substring(1), word[0], Pair(x, y)) -> return true
+            }
+        }
+    }
+
+    return false
+}
+
+enum class Direction(val position: Pair<Int, Int>) {
+    LEFT(-1 to 0),
+    RIGHT(1 to 0),
+    UP(0 to -1),
+    DOWN(0 to 1);
 }
