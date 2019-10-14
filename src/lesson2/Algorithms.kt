@@ -241,11 +241,11 @@ fun List<List<Char>>.containsWord(
     position: Pair<Int, Int>
 ): Boolean {
     val matrix = this
-    val moves = listOf(Direction.UP, Direction.DOWN, Direction.LEFT, Direction.RIGHT)
+    val moves = listOf(1 to 0, 0 to 1, 0 to -1, -1 to 0)
 
     for (move in moves) {
-        val x = move.position.first + position.first
-        val y = move.position.second + position.second
+        val x = move.first + position.first
+        val y = move.second + position.second
 
         if (x >= 0 && x < matrix[position.second].size &&
             y >= 0 && y < matrix.size && matrix[y][x] == char
@@ -258,11 +258,4 @@ fun List<List<Char>>.containsWord(
     }
 
     return false
-}
-
-enum class Direction(val position: Pair<Int, Int>) {
-    LEFT(-1 to 0),
-    RIGHT(1 to 0),
-    UP(0 to -1),
-    DOWN(0 to 1);
 }
