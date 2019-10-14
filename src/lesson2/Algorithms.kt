@@ -102,31 +102,17 @@ fun optimizeBuyAndSell(inputName: String): Pair<Int, Int> {
  * Общий комментарий: решение из Википедии для этой задачи принимается,
  * но приветствуется попытка решить её самостоятельно.
  *
- * Трудоемкость: O(n + n) = O(n)
- * Ресурсоемкость: O(n)
+ * Трудоемкость: O(n)
+ * Ресурсоемкость: O(1)
  */
 fun josephTask(menNumber: Int, choiceInterval: Int): Int {
-    var tempPos = choiceInterval - 1
-    val people = mutableListOf<Int>()
+    var result = 0
 
-    for (i in 0 until menNumber) {
-        people.add(i, i + 1)
+    for (i in 1..menNumber) {
+        result = (result + choiceInterval) % i
     }
 
-    var iteration = menNumber - 1
-
-    while (iteration > 0) {
-        people.removeAt(tempPos)
-        tempPos += choiceInterval - 1
-
-        if (tempPos > people.size - 1) {
-            tempPos %= people.size
-        }
-
-        iteration--
-    }
-
-    return people[0]
+    return result + 1
 }
 
 /**
