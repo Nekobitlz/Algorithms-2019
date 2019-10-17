@@ -3,6 +3,7 @@
 package lesson2
 
 import java.io.File
+import java.util.*
 
 /**
  * Получение наибольшей прибыли (она же -- поиск максимального подмассива)
@@ -193,55 +194,122 @@ fun calcPrimesNumber(limit: Int): Int {
  * Трудоемкость: O(n * m * words.size * word.length)
  * Ресурсоемкость: O(n * m + words.length + words.length + n * m) = O(n * m)
  */
+const val SIZE = Char.MAX_VALUE.toInt()
+
 fun baldaSearcher(inputName: String, words: Set<String>): Set<String> {
-    val lines = File(inputName).readLines()
-    val result = mutableSetOf<String>()
-    val matrix = mutableListOf<List<Char>>()
-    val wordsSet = words.toMutableSet()
+    val file = File(inputName).readLines()
+    val root = TrieNode()
+    val dictionary = arrayOfNulls<String>(words.size)
+    val lines = ArrayList<String>()
 
-    for (i in 0 until lines.size) {
-        matrix.add(lines[i].split(" ")
-            .filter { it != "" }
-            .map { it[0] }
-        )
-    }
+    for (line in file) lines.add(line)
 
-    for (y in 0 until matrix.size) {
-        for (x in 0 until matrix[y].size) {
-            for (word in wordsSet) {
-                if (matrix[y][x] == word[0] && matrix.containsWord(word.substring(2), word[1], Pair(x, y)))
-                    result.add(word)
-            }
+    for ((index, word) in words.withIndex()) dictionary[index] = word
 
-            wordsSet.removeAll(result)
-            if (wordsSet.isEmpty()) return result
+    for (char in words) insertIntoTree(root, char)
+
+    val height = lines.size
+    val width = lines[0].split(" ").size
+    val arrayOfLetters = Array(height) { CharArray(width) }
+
+    for (i in 0 until height) {
+        val letters = lines[i].split(" ")
+
+        for (j in 0 until width) {
+            arrayOfLetters[i][j] = letters[j][0]
         }
     }
 
-    return result
+    return findWords(arrayOfLetters, root)
 }
 
-fun List<List<Char>>.containsWord(
-    word: String,
-    char: Char,
-    position: Pair<Int, Int>
-): Boolean {
-    val matrix = this
-    val moves = listOf(1 to 0, 0 to 1, 0 to -1, -1 to 0)
+class TrieNode {
+    var child = arrayOfNulls<TrieNode>(SIZE)
+    var isEnd = false
 
-    for (move in moves) {
-        val x = move.first + position.first
-        val y = move.second + position.second
+    init {
+        isEnd = false
 
-        if (x >= 0 && x < matrix[position.second].size &&
-            y >= 0 && y < matrix.size && matrix[y][x] == char
-        ) {
-            when {
-                word.isEmpty() -> return true
-                matrix.containsWord(word.substring(1), word[0], Pair(x, y)) -> return true
+        for (i in 0 until SIZE) child[i] = null
+    }
+}
+
+fun insertIntoTree(root: TrieNode, key: String) {
+    var pChild = root
+
+    for (char in key) {
+        val index = char - 'A'
+
+        if (pChild.child[index] == null)
+            pChild.child[index] = TrieNode()
+
+        pChild = pChild.child[index]!!
+    }
+
+    pChild.isEnd = true
+}
+
+fun findWords(matrix: Array<CharArray>, root: TrieNode): TreeSet<String> {
+    val set = TreeSet<String>()
+    val height = matrix.size
+    val width = matrix[0].size
+    val isVisited = Array(height) { BooleanArray(width) }
+    var str = ""
+
+    fun searchWord(
+        root: TrieNode, matrix: Array<CharArray>, i: Int,
+        j: Int, isVisited: Array<BooleanArray>, str: String
+    ) {
+        if (root.isEnd) set.add(str) //word found
+
+        if (isValid(i, j, isVisited)) {
+            isVisited[i][j] = true
+
+            for (k in 0 until SIZE) {
+                if (root.child[k] != null) {
+                    val char = (k + 'A'.toInt()).toChar()
+
+                    if (isValid(i, j + 1, isVisited) && matrix[i][j + 1] == char)
+                        searchWord(root.child[k]!!, matrix, i, j + 1, isVisited, str + char)
+
+                    if (isValid(i + 1, j, isVisited) && matrix[i + 1][j] == char)
+                        searchWord(root.child[k]!!, matrix, i + 1, j, isVisited, str + char)
+
+                    if (isValid(i, j - 1, isVisited) && matrix[i][j - 1] == char)
+                        searchWord(root.child[k]!!, matrix, i, j - 1, isVisited, str + char)
+
+                    if (isValid(i - 1, j, isVisited) && matrix[i - 1][j] == char)
+                        searchWord(root.child[k]!!, matrix, i - 1, j, isVisited, str + char)
+                }
+            }
+
+            isVisited[i][j] = false
+        }
+    }
+
+    for (i in 0 until height) {
+        for (j in 0 until width) {
+            if (root.child[matrix[i][j] - 'A'] != null) {
+                str += matrix[i][j]
+
+                searchWord(
+                    root.child[matrix[i][j] - 'A']!!,
+                    matrix, i, j, isVisited, str
+                )
+
+                str = ""
             }
         }
     }
 
-    return false
+    return set
 }
+
+fun isValid(i: Int, j: Int, visited: Array<BooleanArray>): Boolean {
+    val height = visited.size
+    val width = visited[0].size
+
+    return inRange(i, j, height, width) && !visited[i][j]
+}
+
+fun inRange(i: Int, j: Int, height: Int, width: Int): Boolean = i in 0 until height && j in 0 until width
