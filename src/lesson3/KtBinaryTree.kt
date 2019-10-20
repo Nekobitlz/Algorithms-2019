@@ -12,7 +12,8 @@ class KtBinaryTree<T : Comparable<T>> : AbstractMutableSet<T>(), CheckableSorted
     override var size = 0
         private set
 
-    private class Node<T>(val value: T) {
+    private class Node<T>(var value: T) {
+        var parent: Node<T>? = null
 
         var left: Node<T>? = null
 
@@ -26,6 +27,7 @@ class KtBinaryTree<T : Comparable<T>> : AbstractMutableSet<T>(), CheckableSorted
             return false
         }
         val newNode = Node(element)
+        newNode.parent = closest
         when {
             closest == null -> root = newNode
             comparison < 0 -> {
@@ -61,10 +63,47 @@ class KtBinaryTree<T : Comparable<T>> : AbstractMutableSet<T>(), CheckableSorted
     /**
      * Удаление элемента в дереве
      * Средняя
+     *
+     * Трудоемкость - O(h)
+     * Ресурсоемкость - O(h)
      */
     override fun remove(element: T): Boolean {
-        TODO()
+        val closest = find(element)
+
+        if (closest == null || closest.value != element) return false
+
+        val result = removeNode(root, element)
+        size--
+        return result != null
     }
+
+    private fun removeNode(node: Node<T>?, value: T): Node<T>? {
+        if (node == null) return node
+
+        when {
+            value < node.value -> node.left = removeNode(node.left, value)
+            value > node.value -> node.right = removeNode(node.right, value)
+            node.right != null -> {
+                node.value = findMinimum(node.right!!).value
+                node.right = removeNode(node.right, node.value)
+            }
+            node.left != null -> {
+                node.value = findMaximum(node.left!!).value
+                node.left = removeNode(node.left, node.value)
+            }
+            node == root -> {
+                root = null
+                return node
+            }
+            else -> return null
+        }
+
+        return node
+    }
+
+    private fun findMinimum(node: Node<T>): Node<T> = if (node.left == null) node else findMinimum(node.left!!)
+
+    private fun findMaximum(node: Node<T>): Node<T> = if (node.right == null) node else findMaximum(node.right!!)
 
     override operator fun contains(element: T): Boolean {
         val closest = find(element)
@@ -84,22 +123,54 @@ class KtBinaryTree<T : Comparable<T>> : AbstractMutableSet<T>(), CheckableSorted
     }
 
     inner class BinaryTreeIterator internal constructor() : MutableIterator<T> {
+
+        private var current: Node<T>? = null
+        private var stack = Stack<Node<T>>()
+
+        init {
+            var node = root
+
+            while (node != null) {
+                stack.push(node)
+                node = node.left
+            }
+        }
+
         /**
          * Проверка наличия следующего элемента
          * Средняя
+         *
+         * Трудоемкость - O(1)
+         * Ресурсоемкость - O(1)
          */
         override fun hasNext(): Boolean {
-            // TODO
-            throw NotImplementedError()
+            return stack.isNotEmpty()
         }
 
         /**
          * Поиск следующего элемента
          * Средняя
+         *
+         * Трудоемкость - O(n)
+         * Ресурсоемкость - O(1)
          */
         override fun next(): T {
-            // TODO
-            throw NotImplementedError()
+            current = stack.pop()
+            var node = current
+
+            when {
+                node == null -> throw NoSuchElementException()
+                node.right != null -> {
+                    node = node.right
+
+                    while (node != null) {
+                        stack.push(node)
+                        node = node.left
+                    }
+                }
+            }
+
+            return current!!.value
         }
 
         /**
@@ -107,8 +178,8 @@ class KtBinaryTree<T : Comparable<T>> : AbstractMutableSet<T>(), CheckableSorted
          * Сложная
          */
         override fun remove() {
-            // TODO
-            throw NotImplementedError()
+            if (current != null) remove(current!!.value)
+            else throw NoSuchElementException()
         }
     }
 

@@ -1,11 +1,8 @@
 package lesson3
 
 import org.junit.jupiter.api.Tag
-import kotlin.test.Test
 import java.util.*
-import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertTrue
+import kotlin.test.*
 
 class BinaryTreeTest {
     private fun testAdd(create: () -> CheckableSortedSet<Int>) {
@@ -52,6 +49,23 @@ class BinaryTreeTest {
     private fun <T : Comparable<T>> createKotlinTree(): CheckableSortedSet<T> = KtBinaryTree()
 
     private fun testRemove(create: () -> CheckableSortedSet<Int>) {
+        val tree = create()
+
+        tree.add(42)
+        assertTrue(tree.remove(42))
+
+        tree.add(31)
+        tree.add(32)
+        assertTrue(tree.remove(31))
+
+        tree.add(33)
+        assertTrue(tree.remove(33))
+        assertFalse(tree.remove(45))
+
+        tree.add(32)
+        assertTrue(tree.remove(32))
+        assertFalse(tree.remove(32))
+
         val random = Random()
         for (iteration in 1..100) {
             val list = mutableListOf<Int>()
