@@ -196,24 +196,41 @@ open class KtBinaryTree<T : Comparable<T>>() : AbstractMutableSet<T>(), Checkabl
         private val end: T?
     ) : KtBinaryTree<T>() {
 
+        // very strange warning here
         override var size = 0
             get() = findSize(tree.root)
 
+        /**
+         * Трудоёмкость: O(h)
+         * Ресурсоёмкость: O(1)
+         */
         override fun add(element: T): Boolean {
             if (inRange(element)) {
                 return tree.add(element)
             } else throw IllegalArgumentException()
         }
 
+        /**
+         * Трудоёмкость: O(h)
+         * Ресурсоёмкость: O(1)
+         */
         override fun contains(element: T): Boolean {
             return tree.contains(element) && inRange(element)
         }
 
+        /**
+         * Трудоёмкость: O(1)
+         * Ресурсоёмкость: O(1)
+         */
         private fun inRange(element: T): Boolean {
             return (start == null || element > this.start || element == start) &&
                     (end == null || element < end)
         }
 
+        /**
+         * Трудоёмкость: O(h)
+         * Ресурсоёмкость: O(1)
+         */
         private fun findSize(node: Node<T>?): Int {
             var size = 0
 
@@ -230,6 +247,9 @@ open class KtBinaryTree<T : Comparable<T>>() : AbstractMutableSet<T>(), Checkabl
     /**
      * Найти множество всех элементов в диапазоне [fromElement, toElement)
      * Очень сложная
+     *
+     * Трудоёмкость: O(1)
+     * Ресурсоёмкость: O(1)
      */
     override fun subSet(fromElement: T, toElement: T): SortedSet<T> {
         return BinarySubTree(this, fromElement, toElement)
@@ -238,6 +258,9 @@ open class KtBinaryTree<T : Comparable<T>>() : AbstractMutableSet<T>(), Checkabl
     /**
      * Найти множество всех элементов меньше заданного
      * Сложная
+     *
+     * Трудоёмкость: O(1)
+     * Ресурсоёмкость: O(1)
      */
     override fun headSet(toElement: T): SortedSet<T> {
         return BinarySubTree(this, null, toElement)
@@ -246,6 +269,9 @@ open class KtBinaryTree<T : Comparable<T>>() : AbstractMutableSet<T>(), Checkabl
     /**
      * Найти множество всех элементов больше или равных заданного
      * Сложная
+     *
+     * Трудоёмкость: O(1)
+     * Ресурсоёмкость: O(1)
      */
     override fun tailSet(fromElement: T): SortedSet<T> {
         return BinarySubTree(this, fromElement, null)
