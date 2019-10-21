@@ -219,10 +219,7 @@ open class KtBinaryTree<T : Comparable<T>>() : AbstractMutableSet<T>(), Checkabl
          * Трудоёмкость: O(1)
          * Ресурсоёмкость: O(1)
          */
-        private fun inRange(element: T): Boolean {
-            return (start == null || element > this.start || element == start) &&
-                    (end == null || element < end)
-        }
+        private fun inRange(element: T): Boolean = (start == null || element >= start) && (end == null || element < end)
 
         /**
          * Трудоёмкость: O(h)
