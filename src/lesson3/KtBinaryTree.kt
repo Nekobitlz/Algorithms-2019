@@ -13,8 +13,6 @@ open class KtBinaryTree<T : Comparable<T>>() : AbstractMutableSet<T>(), Checkabl
     override var size = 0
 
     private class Node<T>(var value: T) {
-        var parent: Node<T>? = null
-
         var left: Node<T>? = null
 
         var right: Node<T>? = null
@@ -27,7 +25,6 @@ open class KtBinaryTree<T : Comparable<T>>() : AbstractMutableSet<T>(), Checkabl
             return false
         }
         val newNode = Node(element)
-        newNode.parent = closest
         when {
             closest == null -> root = newNode
             comparison < 0 -> {
@@ -251,9 +248,7 @@ open class KtBinaryTree<T : Comparable<T>>() : AbstractMutableSet<T>(), Checkabl
      * Трудоёмкость: O(1)
      * Ресурсоёмкость: O(1)
      */
-    override fun subSet(fromElement: T, toElement: T): SortedSet<T> {
-        return BinarySubTree(this, fromElement, toElement)
-    }
+    override fun subSet(fromElement: T, toElement: T): SortedSet<T> = BinarySubTree(this, fromElement, toElement)
 
     /**
      * Найти множество всех элементов меньше заданного
@@ -262,9 +257,7 @@ open class KtBinaryTree<T : Comparable<T>>() : AbstractMutableSet<T>(), Checkabl
      * Трудоёмкость: O(1)
      * Ресурсоёмкость: O(1)
      */
-    override fun headSet(toElement: T): SortedSet<T> {
-        return BinarySubTree(this, null, toElement)
-    }
+    override fun headSet(toElement: T): SortedSet<T> = BinarySubTree(this, null, toElement)
 
     /**
      * Найти множество всех элементов больше или равных заданного
@@ -273,9 +266,7 @@ open class KtBinaryTree<T : Comparable<T>>() : AbstractMutableSet<T>(), Checkabl
      * Трудоёмкость: O(1)
      * Ресурсоёмкость: O(1)
      */
-    override fun tailSet(fromElement: T): SortedSet<T> {
-        return BinarySubTree(this, fromElement, null)
-    }
+    override fun tailSet(fromElement: T): SortedSet<T> = BinarySubTree(this, fromElement, null)
 
     override fun first(): T {
         var current: Node<T> = root ?: throw NoSuchElementException()
