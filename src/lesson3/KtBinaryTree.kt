@@ -65,7 +65,7 @@ class KtBinaryTree<T : Comparable<T>> : AbstractMutableSet<T>(), CheckableSorted
      * Средняя
      *
      * Трудоемкость - O(h)
-     * Ресурсоемкость - O(h)
+     * Ресурсоемкость - O(1)
      */
     override fun remove(element: T): Boolean {
         val closest = find(element)
@@ -73,29 +73,29 @@ class KtBinaryTree<T : Comparable<T>> : AbstractMutableSet<T>(), CheckableSorted
         if (closest == null || closest.value != element) return false
 
         val result = removeNode(root, element)
-        size--
-        return result != null
+
+        return if (result != null) {
+            size--
+            true
+        } else false
+
     }
 
     private fun removeNode(node: Node<T>?, value: T): Node<T>? {
-        if (node == null) return node
-
         when {
+            node == null -> return null
             value < node.value -> node.left = removeNode(node.left, value)
             value > node.value -> node.right = removeNode(node.right, value)
-            node.right != null -> {
-                node.value = findMinimum(node.right!!).value
-                node.right = removeNode(node.right, node.value)
+            else -> when {
+                node.left == null && node.right == null -> return null
+                node.left == null -> return node.right
+                node.right == null -> return node.left
+                else -> {
+                    val minimum = findMinimum(node.right!!)
+                    node.value = minimum.value
+                    node.right = removeNode(node.right, minimum.value)
+                }
             }
-            node.left != null -> {
-                node.value = findMaximum(node.left!!).value
-                node.left = removeNode(node.left, node.value)
-            }
-            node == root -> {
-                root = null
-                return node
-            }
-            else -> return null
         }
 
         return node
