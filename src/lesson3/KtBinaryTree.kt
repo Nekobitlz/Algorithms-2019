@@ -1,16 +1,16 @@
 package lesson3
 
+import java.lang.IllegalArgumentException
 import java.util.*
 import kotlin.NoSuchElementException
 import kotlin.math.max
 
 // Attention: comparable supported but comparator is not
-class KtBinaryTree<T : Comparable<T>> : AbstractMutableSet<T>(), CheckableSortedSet<T> {
+open class KtBinaryTree<T : Comparable<T>>() : AbstractMutableSet<T>(), CheckableSortedSet<T> {
 
     private var root: Node<T>? = null
 
     override var size = 0
-        private set
 
     private class Node<T>(var value: T) {
         var parent: Node<T>? = null
@@ -190,12 +190,49 @@ class KtBinaryTree<T : Comparable<T>> : AbstractMutableSet<T>(), CheckableSorted
 
     override fun comparator(): Comparator<in T>? = null
 
+    inner class BinarySubTree<T : Comparable<T>> internal constructor(
+        private val tree: KtBinaryTree<T>,
+        private val start: T?,
+        private val end: T?
+    ) : KtBinaryTree<T>() {
+
+        override var size = 0
+            get() = findSize(tree.root)
+
+        override fun add(element: T): Boolean {
+            if (inRange(element)) {
+                return tree.add(element)
+            } else throw IllegalArgumentException()
+        }
+
+        override fun contains(element: T): Boolean {
+            return tree.contains(element) && inRange(element)
+        }
+
+        private fun inRange(element: T): Boolean {
+            return (start == null || element > this.start || element == start) &&
+                    (end == null || element < end)
+        }
+
+        private fun findSize(node: Node<T>?): Int {
+            var size = 0
+
+            if (node == null) return size
+            if (inRange(node.value)) size++
+
+            size += findSize(node.left)
+            size += findSize(node.right)
+
+            return size
+        }
+    }
+
     /**
      * Найти множество всех элементов в диапазоне [fromElement, toElement)
      * Очень сложная
      */
     override fun subSet(fromElement: T, toElement: T): SortedSet<T> {
-        TODO()
+        return BinarySubTree(this, fromElement, toElement)
     }
 
     /**
@@ -203,7 +240,7 @@ class KtBinaryTree<T : Comparable<T>> : AbstractMutableSet<T>(), CheckableSorted
      * Сложная
      */
     override fun headSet(toElement: T): SortedSet<T> {
-        TODO()
+        return BinarySubTree(this, null, toElement)
     }
 
     /**
@@ -211,7 +248,7 @@ class KtBinaryTree<T : Comparable<T>> : AbstractMutableSet<T>(), CheckableSorted
      * Сложная
      */
     override fun tailSet(fromElement: T): SortedSet<T> {
-        TODO()
+        return BinarySubTree(this, fromElement, null)
     }
 
     override fun first(): T {
@@ -229,4 +266,5 @@ class KtBinaryTree<T : Comparable<T>> : AbstractMutableSet<T>(), CheckableSorted
         }
         return current.value
     }
+
 }
