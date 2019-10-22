@@ -33,7 +33,7 @@ import java.io.File
  */
 fun optimizeBuyAndSell(inputName: String): Pair<Int, Int> {
     val lines = File(inputName).readLines()
-    var result: Pair<Int, Int> = 1 to 2
+    var result = 1 to 2
     val stocks = mutableListOf<Int>()
 
     for (line in lines) stocks.add(line.toInt())
