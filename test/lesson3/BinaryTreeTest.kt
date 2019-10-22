@@ -68,20 +68,30 @@ class BinaryTreeTest {
         assertTrue(tree.remove(32))
         assertFalse(tree.remove(32))
 
-        val myList = listOf(0, 74, 60, 17, 54, 46, 29, 79, 29, 21, 34, 99, 39, 80, 52, 8, 47, 99, 20, 27)
+        val myList = listOf(9, 1, 4, 2, 6, 9, 4, 2, 1, 9, 0, 4, 9, 9, 6, 3, 9, 5, 4, 2)
         for (element in myList) {
             tree.add(element)
             print("$element ")
         }
-        assertTrue(tree.remove(0))
+        val myOldSize = tree.size
+        assertTrue(tree.remove(9))
+        assertEquals(myOldSize - 1, tree.size)
         println()
         for (element in tree) {
             print("$element ")
         }
         assertEquals(
             tree.toString(),
-            listOf(8, 17, 20, 21, 27, 29, 34, 39, 42, 46, 47, 52, 54, 60, 74, 79, 80, 99).toString()
+            listOf(0, 1, 2, 3, 4, 5, 6, 42).toString()
         )
+        for (element in myList) {
+            print("$element ")
+            val inn = element != 9
+            assertEquals(
+                inn, element in tree,
+                "$element should be ${if (inn) "in" else "not in"} tree"
+            )
+        }
 
         val random = Random()
         for (iteration in 1..ITERATIONS) {
@@ -105,7 +115,7 @@ class BinaryTreeTest {
                 val inn = element != toRemove
                 assertEquals(
                     inn, element in binarySet,
-                    "$element should be ${if (inn) "in" else "not in"} tree"
+                    "$element should be ${if (inn) "in" else "not in"} tree $binarySet"
                 )
             }
             println()
@@ -265,9 +275,3 @@ class BinaryTreeTest {
         testIteratorRemove { createJavaTree() }
     }
 }
-
-/* private fun MutableList<Int>.addRandomElement(random: Random, e: Int) {
-    val digit = random.nextInt(e)
-    if (this.contains(digit)) this.addRandomElement(random, e)
-    else this.add(digit)
-}*/
