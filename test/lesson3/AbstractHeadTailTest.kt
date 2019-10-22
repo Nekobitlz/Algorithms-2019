@@ -52,6 +52,17 @@ abstract class AbstractHeadTailTest {
         for (i in 1..10)
             assertEquals(true, set.contains(i))
 
+        val mySet1 = tree.headSet(1)
+        assertEquals(0, mySet1.size)
+        assertEquals(false, mySet1.contains(1))
+        assertFailsWith<IllegalArgumentException> { mySet1.add(1) }
+
+        val mySet2 = tree.headSet(10)
+        assertEquals(9, mySet2.size)
+        assertEquals(true, mySet2.contains(9))
+        assertEquals(false, mySet2.contains(10))
+        assertFailsWith<IllegalArgumentException> { mySet2.add(10) }
+
     }
 
     protected fun doTailSetTest() {
@@ -71,6 +82,16 @@ abstract class AbstractHeadTailTest {
         for (i in 1..10)
             assertEquals(true, set.contains(i))
 
+        val mySet1 = tree.tailSet(1)
+        assertEquals(10, mySet1.size)
+        assertEquals(true, mySet1.contains(1))
+        assertFailsWith<IllegalArgumentException> { mySet1.add(0) }
+
+        val mySet2 = tree.tailSet(10)
+        assertEquals(1, mySet2.size)
+        assertEquals(false, mySet2.contains(9))
+        assertEquals(true, mySet2.contains(10))
+        assertFailsWith<IllegalArgumentException> { mySet2.add(9) }
     }
 
     protected fun doHeadSetRelationTest() {
@@ -86,6 +107,12 @@ abstract class AbstractHeadTailTest {
         assertFailsWith<IllegalArgumentException> { set.add(8) }
         assertEquals(8, set.size)
         assertEquals(13, tree.size)
+
+        tree.add(7)
+        assertTrue(tree.contains(7))
+        assertFalse(set.contains(7))
+        assertTrue(set.contains(2))
+        assertFailsWith<IllegalArgumentException> { set.add(15) }
     }
 
     protected fun doTailSetRelationTest() {
@@ -101,6 +128,12 @@ abstract class AbstractHeadTailTest {
         assertFailsWith<IllegalArgumentException> { set.add(-2) }
         assertEquals(9, set.size)
         assertEquals(13, tree.size)
+
+        tree.add(-1)
+        assertTrue(tree.contains(-1))
+        assertFalse(set.contains(-1))
+        assertTrue(set.contains(4))
+        assertFailsWith<IllegalArgumentException> { set.add(3) }
     }
 
     protected fun doSubSetTest() {
@@ -131,6 +164,17 @@ abstract class AbstractHeadTailTest {
         randomValues.forEach { element ->
             assertEquals(element in fromElement until toElement, randomSubset.contains(element))
         }
+
+        val mySet1 = tree.subSet(1, 1)
+        assertEquals(0, mySet1.size)
+        assertEquals(false, mySet1.contains(1))
+        assertFailsWith<IllegalArgumentException> { mySet1.add(1) }
+
+        val mySet2 = tree.subSet(1, 10)
+        assertEquals(9, mySet2.size)
+        assertEquals(true, mySet2.contains(1))
+        assertEquals(false, mySet2.contains(10))
+        assertFailsWith<IllegalArgumentException> { mySet2.add(10) }
     }
 
     protected fun doSubSetRelationTest() {
@@ -149,6 +193,11 @@ abstract class AbstractHeadTailTest {
         assertFailsWith<IllegalArgumentException> { set.add(20) }
         assertEquals(11, set.size)
         assertEquals(14, tree.size)
-    }
 
+        tree.add(-1)
+        assertTrue(tree.contains(-1))
+        assertFalse(set.contains(-1))
+        assertTrue(set.contains(2))
+        assertFailsWith<IllegalArgumentException> { set.add(15) }
+    }
 }

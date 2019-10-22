@@ -4,6 +4,8 @@ import org.junit.jupiter.api.Tag
 import java.util.*
 import kotlin.test.*
 
+const val ITERATIONS = 10
+
 class BinaryTreeTest {
     private fun testAdd(create: () -> CheckableSortedSet<Int>) {
         val tree = create()
@@ -52,7 +54,7 @@ class BinaryTreeTest {
         val tree = create()
 
         tree.add(42)
-        assertTrue(tree.remove(42))
+        assertFalse(tree.remove(42))
 
         tree.add(31)
         tree.add(32)
@@ -66,11 +68,26 @@ class BinaryTreeTest {
         assertTrue(tree.remove(32))
         assertFalse(tree.remove(32))
 
+        val myList = listOf(0, 74, 60, 17, 54, 46, 29, 79, 29, 21, 34, 99, 39, 80, 52, 8, 47, 99, 20, 27)
+        for (element in myList) {
+            tree.add(element)
+            print("$element ")
+        }
+        assertTrue(tree.remove(0))
+        println()
+        for (element in tree) {
+            print("$element ")
+        }
+        assertEquals(
+            tree.toString(),
+            listOf(8, 17, 20, 21, 27, 29, 34, 39, 42, 46, 47, 52, 54, 60, 74, 79, 80, 99).toString()
+        )
+
         val random = Random()
-        for (iteration in 1..100) {
+        for (iteration in 1..ITERATIONS) {
             val list = mutableListOf<Int>()
             for (i in 1..20) {
-                list.add(random.nextInt(100))
+                list.add(random.nextInt(ITERATIONS))
             }
             val binarySet = create()
             assertFalse(binarySet.remove(42))
@@ -84,12 +101,14 @@ class BinaryTreeTest {
             assertEquals(oldSize - 1, binarySet.size)
             println("Removing $toRemove from $list")
             for (element in list) {
+                print("$element ")
                 val inn = element != toRemove
                 assertEquals(
                     inn, element in binarySet,
                     "$element should be ${if (inn) "in" else "not in"} tree"
                 )
             }
+            println()
             assertTrue(binarySet.checkInvariant(), "Binary tree invariant is false after tree.remove()")
             assertTrue(
                 binarySet.height() <= originalHeight,
@@ -111,11 +130,15 @@ class BinaryTreeTest {
     }
 
     private fun testIterator(create: () -> CheckableSortedSet<Int>) {
+        val mySet = create()
+        val myIterator = mySet.iterator()
+        assertFailsWith<NoSuchElementException> { myIterator.next() }
+
         val random = Random()
-        for (iteration in 1..100) {
+        for (iteration in 1..ITERATIONS) {
             val list = mutableListOf<Int>()
             for (i in 1..20) {
-                list.add(random.nextInt(100))
+                list.add(random.nextInt(ITERATIONS))
             }
             val treeSet = TreeSet<Int>()
             val binarySet = create()
@@ -156,11 +179,39 @@ class BinaryTreeTest {
     }
 
     private fun testIteratorRemove(create: () -> CheckableSortedSet<Int>) {
+        val mySet = create()
+        val myIterator1 = mySet.iterator()
+        assertFailsWith<NoSuchElementException> { myIterator1.remove() }
+
+        val myList = listOf(3, 96, 15, 46, 52, 91, 47, 92, 83, 84, 80, 41, 40, 20, 90, 34, 4, 45, 66, 43)
+        val myTreeSet = create()
+        val myToRemove = 3
+        for (element in myList) myTreeSet.add(element)
+        val myIterator = myTreeSet.iterator()
+        var myCounter = myTreeSet.size
+        while (myIterator.hasNext()) {
+            val element = myIterator.next()
+            myCounter--
+            print("$element ")
+            if (element == myToRemove) {
+                myIterator.remove()
+            }
+        }
+        assertEquals(
+            0, myCounter,
+            "Iterator.remove() of $myToRemove from $myList changed iterator position: " +
+                    "we've traversed a total of ${myTreeSet.size - myCounter} elements instead of ${myTreeSet.size}"
+        )
+        assertEquals(
+            myTreeSet.toString(),
+            listOf(3, 4, 15, 20, 34, 40, 41, 43, 45, 46, 47, 52, 66, 80, 83, 84, 90, 91, 92, 96).toString()
+        )
+
         val random = Random()
-        for (iteration in 1..100) {
+        for (iteration in 1..ITERATIONS) {
             val list = mutableListOf<Int>()
             for (i in 1..20) {
-                list.add(random.nextInt(100))
+                list.add(random.nextInt(ITERATIONS))
             }
             val treeSet = TreeSet<Int>()
             val binarySet = create()
@@ -181,6 +232,8 @@ class BinaryTreeTest {
                     iterator.remove()
                 }
             }
+            println()
+            println(binarySet)
             assertEquals(
                 0, counter,
                 "Iterator.remove() of $toRemove from $list changed iterator position: " +
@@ -212,3 +265,9 @@ class BinaryTreeTest {
         testIteratorRemove { createJavaTree() }
     }
 }
+
+/* private fun MutableList<Int>.addRandomElement(random: Random, e: Int) {
+    val digit = random.nextInt(e)
+    if (this.contains(digit)) this.addRandomElement(random, e)
+    else this.add(digit)
+}*/

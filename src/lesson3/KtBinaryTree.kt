@@ -152,7 +152,7 @@ open class KtBinaryTree<T : Comparable<T>>() : AbstractMutableSet<T>(), Checkabl
          * Ресурсоемкость - O(1)
          */
         override fun next(): T {
-            current = stack.pop()
+            if (hasNext()) current = stack.pop()
             var node = current
 
             when {
