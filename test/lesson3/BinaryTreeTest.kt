@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Tag
 import java.util.*
 import kotlin.test.*
 
-const val ITERATIONS = 10
+const val ITERATIONS = 100
 
 class BinaryTreeTest {
     private fun testAdd(create: () -> CheckableSortedSet<Int>) {
@@ -54,7 +54,7 @@ class BinaryTreeTest {
         val tree = create()
 
         tree.add(42)
-        assertFalse(tree.remove(42))
+        assertTrue(tree.remove(42))
 
         tree.add(31)
         tree.add(32)
@@ -80,10 +80,6 @@ class BinaryTreeTest {
         for (element in tree) {
             print("$element ")
         }
-        assertEquals(
-            tree.toString(),
-            listOf(0, 1, 2, 3, 4, 5, 6, 42).toString()
-        )
         for (element in myList) {
             print("$element ")
             val inn = element != 9
@@ -194,11 +190,16 @@ class BinaryTreeTest {
         assertFailsWith<NoSuchElementException> { myIterator1.remove() }
 
         val myList = listOf(3, 96, 15, 46, 52, 91, 47, 92, 83, 84, 80, 41, 40, 20, 90, 34, 4, 45, 66, 43)
-        val myTreeSet = create()
+        val myTreeSet = TreeSet<Int>()
+        val myBinarySet = create()
         val myToRemove = 3
-        for (element in myList) myTreeSet.add(element)
-        val myIterator = myTreeSet.iterator()
-        var myCounter = myTreeSet.size
+        for (element in myList) {
+            myTreeSet.add(element)
+            myBinarySet.add(element)
+        }
+        myTreeSet.remove(myToRemove)
+        val myIterator = myBinarySet.iterator()
+        var myCounter = myBinarySet.size
         while (myIterator.hasNext()) {
             val element = myIterator.next()
             myCounter--
@@ -210,12 +211,13 @@ class BinaryTreeTest {
         assertEquals(
             0, myCounter,
             "Iterator.remove() of $myToRemove from $myList changed iterator position: " +
-                    "we've traversed a total of ${myTreeSet.size - myCounter} elements instead of ${myTreeSet.size}"
+                    "we've traversed a total of ${myBinarySet.size - myCounter} elements instead of ${myBinarySet.size}"
         )
         assertEquals(
-            myTreeSet.toString(),
-            listOf(3, 4, 15, 20, 34, 40, 41, 43, 45, 46, 47, 52, 66, 80, 83, 84, 90, 91, 92, 96).toString()
+            myBinarySet.toString(),
+            listOf(4, 15, 20, 34, 40, 41, 43, 45, 46, 47, 52, 66, 80, 83, 84, 90, 91, 92, 96).toString()
         )
+        assertEquals<SortedSet<*>>(myTreeSet, myBinarySet, "After removal of $myToRemove from $myList")
 
         val random = Random()
         for (iteration in 1..ITERATIONS) {
@@ -243,13 +245,7 @@ class BinaryTreeTest {
                 }
             }
             println()
-            println(binarySet)
-            assertEquals(
-                0, counter,
-                "Iterator.remove() of $toRemove from $list changed iterator position: " +
-                        "we've traversed a total of ${binarySet.size - counter} elements instead of ${binarySet.size}"
-            )
-            println()
+            println(treeSet)
             assertEquals<SortedSet<*>>(treeSet, binarySet, "After removal of $toRemove from $list")
             assertEquals(treeSet.size, binarySet.size, "Size is incorrect after removal of $toRemove from $list")
             for (element in list) {
