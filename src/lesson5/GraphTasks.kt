@@ -2,6 +2,8 @@
 
 package lesson5
 
+import java.util.*
+
 /**
  * Эйлеров цикл.
  * Средняя
@@ -27,10 +29,45 @@ package lesson5
  *
  * Справка: Эйлеров цикл -- это цикл, проходящий через все рёбра
  * связного графа ровно по одному разу
+ *
+ * Трудоемкость: О(V + E)
+ * Ресурсоемкость: O(V + E)
  */
 fun Graph.findEulerLoop(): List<Graph.Edge> {
-    TODO()
+    when {
+        vertices.isEmpty() || edges.isEmpty() -> return listOf()
+        !hasEulerPath() -> return listOf()
+    }
+
+    val vertexStack = Stack<Graph.Vertex>()
+    val resultQueue = LinkedList<Graph.Vertex>()
+    val edgesList = edges
+
+    vertexStack.push(vertices.first())
+
+    while (vertexStack.isNotEmpty()) {
+        val currentVertex = vertexStack.peek()
+
+        for (vertex in vertices) {
+            val edge = getConnection(currentVertex, vertex) ?: continue
+
+            if (edgesList.contains(edge)) {
+                vertexStack.push(vertex)
+                edgesList.remove(edge)
+                break
+            }
+        }
+
+        if (currentVertex == vertexStack.peek()) {
+            vertexStack.pop()
+            resultQueue.push(currentVertex)
+        }
+    }
+
+    return (0 until resultQueue.size - 1).map { getConnection(resultQueue[it], resultQueue[it + 1])!! }
 }
+
+private fun Graph.hasEulerPath(): Boolean = vertices.none { getNeighbors(it).size % 2 != 0 }
 
 /**
  * Минимальное остовное дерево.
