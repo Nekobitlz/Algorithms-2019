@@ -34,10 +34,7 @@ import java.util.*
  * Ресурсоемкость: O(V + E)
  */
 fun Graph.findEulerLoop(): List<Graph.Edge> {
-    when {
-        vertices.isEmpty() || edges.isEmpty() -> return listOf()
-        !hasEulerPath() -> return listOf()
-    }
+    if (vertices.isEmpty() || edges.isEmpty() || !hasEulerPath()) return listOf()
 
     val vertexStack = Stack<Graph.Vertex>()
     val resultQueue = LinkedList<Graph.Vertex>()
