@@ -128,20 +128,41 @@ fun Graph.minimumSpanningTree(): Graph {
 fun Graph.largestIndependentVertexSet(): Set<Vertex> {
     if (vertices.isEmpty() || edges.isEmpty()) return emptySet()
 
-    val edges = findBridges()
-    require(edges.isNotEmpty()) //check for graph with loops
+    val edges = findBridges() // called from Bridges.kt
+    require(edges.isNotEmpty()) // check for graph with loops
 
     val independentSets = mutableMapOf<Vertex, Set<Vertex>>()
-    println(isConnected())
+    val result = mutableSetOf<Vertex>()
+    val unconnectedVertices = findUnconnectedVertices()
 
-    if (isConnected()) return findIndependentVertices(independentSets, parent = null, vertex = vertices.first())
-    else {
-        val result = mutableSetOf<Vertex>()
-        val unconnected = findUnconnectedVertices()
-        for (vertex in unconnected) {
-            result.addAll(findIndependentVertices(independentSets, parent = null, vertex = vertex))
+    for (vertex in unconnectedVertices) {
+        result.addAll(findIndependentVertices(independentSets, parent = null, vertex = vertex))
+    }
+
+    return result
+}
+
+private fun Graph.findUnconnectedVertices(): Set<Vertex> {
+    val unconnectedVertices = mutableSetOf<Vertex>()
+
+    depthFirstSearch(vertices.first())
+    unconnectedVertices.add(vertices.first())
+
+    for (vertex in vertices) {
+        if (!vertex.isVisited) {
+            unconnectedVertices.add(vertex)
+            depthFirstSearch(vertex)
         }
-        return result
+    }
+
+    return unconnectedVertices
+}
+
+private fun Graph.depthFirstSearch(vertex: Vertex) {
+    vertex.isVisited = true
+
+    for (neighbour in getNeighbors(vertex)) {
+        if (!neighbour.isVisited) depthFirstSearch(neighbour)
     }
 }
 
@@ -166,57 +187,6 @@ private fun Graph.findIndependentChildren(
 ): List<Vertex> = getNeighbors(vertex)
     .filterNot { it == parent }
     .flatMap { findIndependentVertices(independentSets, vertex, it) }
-
-fun Graph.isConnected(): Boolean {
-    val visited = booleanArrayOf()
-
-    depthFirstSearch(visited, vertices.first())
-
-    return vertices.none { !it.isVisited }
-}
-
-fun Graph.depthFirstSearch(visited: BooleanArray, vertex: Vertex) {
-    vertex.isVisited = true
-
-    for (neighbour in getNeighbors(vertex)) {
-        if (!neighbour.isVisited) depthFirstSearch(visited, neighbour)
-    }
-}
-
-fun Graph.findUnconnectedVertices(): Set<Vertex> {
-    val visited = booleanArrayOf()
-    val unconnectedSet = mutableSetOf<Vertex>()
-
-    depthFirstSearch(visited, vertices.first())
-    unconnectedSet.add(vertices.first())
-
-    for (vertex in vertices) {
-        if (!vertex.isVisited) {
-            unconnectedSet.add(vertex)
-            depthFirstSearch(visited, vertex)
-        }
-    }
-
-    return unconnectedSet
-}
-
-/*fun Graph.hasCycle(): Boolean = vertices.any { !it.isVisited && hasCycle(it) }
-
-fun Graph.hasCycle(vertex: Vertex): Boolean {
-    vertex.isBeingVisited = true
-
-    for (neighbor in getNeighbors(vertex)) {
-        when {
-            neighbor.isBeingVisited -> return true
-            !neighbor.isVisited && hasCycle(neighbor) -> return true
-        }
-    }
-
-    vertex.isBeingVisited = false
-    vertex.isVisited = true
-
-    return false
-}*/
 
 /**
  * Наидлиннейший простой путь.
