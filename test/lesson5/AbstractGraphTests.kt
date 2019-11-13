@@ -1,6 +1,8 @@
 package lesson5
 
 import lesson5.impl.GraphBuilder
+import org.junit.jupiter.api.assertThrows
+import java.lang.IllegalArgumentException
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
@@ -216,9 +218,9 @@ abstract class AbstractGraphTests {
             addConnection(a, b)
             addConnection(a, c)
             addConnection(b, d)
+            addConnection(b, g)
             addConnection(c, e)
             addConnection(c, f)
-            addConnection(b, g)
             addConnection(d, i)
             addConnection(g, h)
             addConnection(h, j)
@@ -242,6 +244,37 @@ abstract class AbstractGraphTests {
             setOf(cross["A"], cross["B"], cross["C"], cross["D"]),
             cross.largestIndependentVertexSet()
         )
+
+        val graph2 = GraphBuilder().apply {
+            val a = addVertex("A")
+            val b = addVertex("B")
+            val c = addVertex("C")
+            addConnection(a, b)
+            addConnection(b, c)
+            addConnection(a, c)
+        }.build()
+        assertThrows<IllegalArgumentException> { graph2.largestIndependentVertexSet() }
+
+        val graph3 = GraphBuilder().apply {
+            val a1 = addVertex("A1")
+            val a2 = addVertex("A2")
+            val b1 = addVertex("B1")
+            val b2 = addVertex("B2")
+            val c = addVertex("C")
+            val d1 = addVertex("D1")
+            val d2 = addVertex("D2")
+            addConnection(a1, a2)
+            addConnection(b1, b2)
+            addConnection(d1, d2)
+            addConnection(a1, b1)
+            addConnection(b1, d1)
+            addConnection(a2, b2)
+            addConnection(b2, d2)
+            addConnection(a2, c)
+            addConnection(b2, c)
+            addConnection(d2, c)
+        }.build()
+        assertThrows<IllegalArgumentException> { graph3.largestIndependentVertexSet() }
     }
 
     fun longestSimplePath(longestSimplePath: Graph.() -> Path) {

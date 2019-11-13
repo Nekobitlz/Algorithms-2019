@@ -11,6 +11,9 @@ public interface Graph {
     interface Vertex {
         @NotNull
         String getName();
+
+        boolean isVisited();
+        void setVisited(boolean b);
     }
 
     interface Edge {
