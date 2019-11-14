@@ -34,6 +34,7 @@ abstract class AbstractGraphTests {
         val emptyGraph = GraphBuilder().build()
         val emptyLoop = emptyGraph.findEulerLoop()
         assertTrue(emptyLoop.isEmpty(), "Euler loop should be empty for the empty graph")
+
         val simpleGraph = GraphBuilder().apply {
             val a = addVertex("A")
             val b = addVertex("B")
@@ -41,6 +42,7 @@ abstract class AbstractGraphTests {
         }.build()
         val simpleLoop = simpleGraph.findEulerLoop()
         simpleLoop.assert(shouldExist = false, graph = simpleGraph)
+
         val unconnected = GraphBuilder().apply {
             val a = addVertex("A")
             val b = addVertex("B")
@@ -51,6 +53,7 @@ abstract class AbstractGraphTests {
         }.build()
         val unconnectedLoop = unconnected.findEulerLoop()
         unconnectedLoop.assert(shouldExist = false, graph = unconnected)
+
         val graph = GraphBuilder().apply {
             val a = addVertex("A")
             val b = addVertex("B")
@@ -61,6 +64,7 @@ abstract class AbstractGraphTests {
         }.build()
         val loop = graph.findEulerLoop()
         loop.assert(shouldExist = true, graph = graph)
+
         val graph2 = GraphBuilder().apply {
             val a = addVertex("A")
             val b = addVertex("B")
@@ -89,6 +93,7 @@ abstract class AbstractGraphTests {
         }.build()
         val loop2 = graph2.findEulerLoop()
         loop2.assert(shouldExist = true, graph = graph2)
+
         // Seven bridges of Koenigsberg
         //    A1 -- A2 ---
         //    |      |    |
@@ -116,11 +121,64 @@ abstract class AbstractGraphTests {
         }.build()
         val loop3 = graph3.findEulerLoop()
         loop3.assert(shouldExist = false, graph = graph3)
+
+        val graph4 = GraphBuilder().apply {
+            val a = addVertex("A")
+            val b = addVertex("B")
+            val c = addVertex("C")
+            val d = addVertex("D")
+            val e = addVertex("E")
+
+            addConnection(a, b)
+            addConnection(b, c)
+            addConnection(c, e)
+            addConnection(e, d)
+            addConnection(d, c)
+            addConnection(c, a)
+        }.build()
+        val loop4 = graph4.findEulerLoop()
+        loop4.assert(shouldExist = true, graph = graph4)
+
+        val graph5 = GraphBuilder().apply {
+            val a = addVertex("A")
+            val b = addVertex("B")
+            val c = addVertex("C")
+            val d = addVertex("D")
+
+            addConnection(a, b)
+            addConnection(b, c)
+            addConnection(c, d)
+            addConnection(d, a)
+            addConnection(d, b)
+        }.build()
+        val loop5 = graph5.findEulerLoop()
+        loop5.assert(shouldExist = false, graph = graph5)
+
+        val graph6 = GraphBuilder().apply {
+            val a = addVertex("A")
+            val b = addVertex("B")
+            val c = addVertex("C")
+            val d = addVertex("D")
+            val e = addVertex("E")
+            val f = addVertex("F")
+
+            addConnection(a, b)
+            addConnection(b, c)
+            addConnection(c, d)
+            addConnection(d, a)
+            addConnection(d, e)
+            addConnection(e, b)
+            addConnection(b, f)
+            addConnection(f, d)
+        }.build()
+        val loop6 = graph6.findEulerLoop()
+        loop6.assert(shouldExist = true, graph = graph6)
     }
 
     fun minimumSpanningTree(minimumSpanningTree: Graph.() -> Graph) {
         val emptyGraph = GraphBuilder().build()
         assertTrue(emptyGraph.minimumSpanningTree().edges.isEmpty())
+
         val graph = GraphBuilder().apply {
             val a = addVertex("A")
             val b = addVertex("B")
@@ -132,6 +190,7 @@ abstract class AbstractGraphTests {
         val tree = graph.minimumSpanningTree()
         assertEquals(2, tree.edges.size)
         assertEquals(2, tree.findBridges().size)
+
         val graph2 = GraphBuilder().apply {
             val a = addVertex("A")
             val b = addVertex("B")
@@ -161,6 +220,7 @@ abstract class AbstractGraphTests {
         val tree2 = graph2.minimumSpanningTree()
         assertEquals(10, tree2.edges.size)
         assertEquals(10, tree2.findBridges().size)
+
         // Cross
         val graph3 = GraphBuilder().apply {
             val a = addVertex("A")
@@ -190,6 +250,7 @@ abstract class AbstractGraphTests {
             setOf(simpleGraph["A"]),
             simpleGraph.largestIndependentVertexSet()
         )
+
         val unconnected = GraphBuilder().apply {
             val a = addVertex("A")
             val b = addVertex("B")
@@ -204,6 +265,7 @@ abstract class AbstractGraphTests {
             setOf(unconnected["A"], unconnected["C"], unconnected["E"]),
             unconnected.largestIndependentVertexSet()
         )
+
         val graph = GraphBuilder().apply {
             val a = addVertex("A")
             val b = addVertex("B")
@@ -229,6 +291,7 @@ abstract class AbstractGraphTests {
             setOf(graph["A"], graph["D"], graph["E"], graph["F"], graph["G"], graph["J"]),
             graph.largestIndependentVertexSet()
         )
+
         val cross = GraphBuilder().apply {
             val a = addVertex("A")
             val b = addVertex("B")
@@ -333,6 +396,7 @@ abstract class AbstractGraphTests {
         }.build()
         val longestPath2 = graph2.longestSimplePath()
         assertEquals(10, longestPath2.length)
+
         // Seven bridges of Koenigsberg
         //    A1 -- A2 ---
         //    |      |    |
