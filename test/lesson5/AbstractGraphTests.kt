@@ -360,6 +360,27 @@ abstract class AbstractGraphTests {
         }.build()
         val longestPath3 = graph3.longestSimplePath()
         assertEquals(6, longestPath3.length)
-    }
 
+        val simpleGraph = GraphBuilder().apply {
+            val a = addVertex("A")
+            val b = addVertex("B")
+            addConnection(a, b)
+        }.build()
+        val simpleGraphPath = simpleGraph.longestSimplePath()
+        assertEquals(1, simpleGraphPath.length)
+
+        val cross = GraphBuilder().apply {
+            val a = addVertex("A")
+            val b = addVertex("B")
+            val c = addVertex("C")
+            val d = addVertex("D")
+            val e = addVertex("E")
+            addConnection(a, e)
+            addConnection(b, e)
+            addConnection(c, e)
+            addConnection(d, e)
+        }.build()
+        val crossPath = cross.longestSimplePath()
+        assertEquals(2, crossPath.length)
+    }
 }
