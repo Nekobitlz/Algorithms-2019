@@ -210,6 +210,9 @@ private fun Graph.findIndependentChildren(
  * J ------------ K
  *
  * Ответ: A, E, J, K, D, C, H, G, B, F, I
+ *
+ * Трудоемкость: О(V!)
+ * Ресурсоемкость: O(V!)
  */
 fun Graph.longestSimplePath(): Path {
     if (vertices.isEmpty() || edges.isEmpty()) return Path()
