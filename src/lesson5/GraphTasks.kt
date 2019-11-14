@@ -124,12 +124,15 @@ fun Graph.minimumSpanningTree(): Graph {
  * Если на входе граф с циклами, бросить IllegalArgumentException
  *
  * Эта задача может быть зачтена за пятый и шестой урок одновременно
+ *
+ * Трудоемкость: O(V + E)
+ * Ресурсоемкость: O(V^2)
  */
 fun Graph.largestIndependentVertexSet(): Set<Vertex> {
     if (vertices.isEmpty() || edges.isEmpty()) return emptySet()
 
-    val edges = findBridges() // called from Bridges.kt
-    require(edges.isNotEmpty()) // check for graph with loops
+    val bridges = findBridges() // called from Bridges.kt
+    require(bridges.isNotEmpty()) // check for graph with loops
 
     val independentSets = mutableMapOf<Vertex, Set<Vertex>>()
     val result = mutableSetOf<Vertex>()
@@ -209,5 +212,22 @@ private fun Graph.findIndependentChildren(
  * Ответ: A, E, J, K, D, C, H, G, B, F, I
  */
 fun Graph.longestSimplePath(): Path {
-    TODO()
+    if (vertices.isEmpty() || edges.isEmpty()) return Path()
+
+    var longestPath = Path(vertices.first())
+    val deque = ArrayDeque<Path>()
+
+    vertices.mapTo(deque) { Path(it) }
+
+    while (deque.isNotEmpty()) {
+        val current = deque.pop()
+        val last = current.vertices.last()
+        val neighbors = getNeighbors(last)
+
+        if (current.length > longestPath.length) longestPath = current
+
+        neighbors.filter { it !in current }.forEach { deque.addLast(Path(previous = current, g = this, next = it)) }
+    }
+
+    return longestPath
 }
