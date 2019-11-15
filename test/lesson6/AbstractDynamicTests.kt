@@ -35,6 +35,18 @@ abstract class AbstractDynamicTests {
                 """.trimIndent()
             ).length, "Answer must have length of $expectedLength2"
         )
+        assertEquals(
+            "здесь  пробелов  ",
+            longestCommonSubSequence("здесь       много      пробелов    ", "а  здесь  пробелов  много")
+        )
+        assertEquals(
+            "здесьетпробелов",
+            longestCommonSubSequence("здесьнетпробелов", "а здесь есть пробелов")
+        )
+        assertEquals(
+            "а,знак;препинания!",
+            longestCommonSubSequence("а, что. насчёт: знаков; препинания?!", "а,знаки;препинания:тут!?")
+        )
     }
 
     fun longestIncreasingSubSequence(longestIncreasingSubSequence: (List<Int>) -> List<Int>) {

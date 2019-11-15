@@ -13,9 +13,42 @@ package lesson6
  * Если общей подпоследовательности нет, вернуть пустую строку.
  * Если есть несколько самых длинных общих подпоследовательностей, вернуть любую из них.
  * При сравнении подстрок, регистр символов *имеет* значение.
+ *
+ * Трудоемкость: О(first.length * second.length)
+ * Ресурсоемкость: O(2 * 2 * second.length) = O(second.length)
  */
 fun longestCommonSubSequence(first: String, second: String): String {
-    TODO()
+    // space in order to be able to start loop from 1 and take the remainder of the division
+    val firstSequence = " $first"
+    val secondSequence = " $second"
+
+    val dp = Array(2) { IntArray(second.length + 1) }
+    val strDp = Array(2) { Array(second.length + 1) { "" } }
+
+    for (i in 1..first.length) {
+        for (j in 1..second.length) {
+            if (firstSequence[i] == secondSequence[j]) {
+                dp[i % 2][j] = dp[(i - 1) % 2][j - 1] + 1
+                strDp[i % 2][j] = strDp[(i - 1) % 2][j - 1] + firstSequence[i]
+            } else {
+                var x: Int
+                var y: Int
+
+                if (dp[(i - 1) % 2][j] > dp[i % 2][j - 1]) {
+                    x = (i - 1) % 2
+                    y = j
+                } else {
+                    x = i % 2
+                    y = j - 1
+                }
+
+                dp[i % 2][j] = dp[x][y]
+                strDp[i % 2][j] = strDp[x][y]
+            }
+        }
+    }
+
+    return strDp[first.length % 2][second.length]
 }
 
 /**
