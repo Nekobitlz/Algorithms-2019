@@ -65,8 +65,8 @@ fun longestCommonSubSequence(first: String, second: String): String {
  * то вернуть ту, в которой числа расположены раньше (приоритет имеют первые числа).
  * В примере ответами являются 2, 8, 9, 12 или 2, 5, 9, 12 -- выбираем первую из них.
  *
- * Трудоемкость: O(n)
- * Ресурсоемкость: O(n)
+ * Трудоемкость: O(n * k), где k - количество возрастающих подпоследовательностей
+ * Ресурсоемкость: O(n * k), где k - количество возрастающих подпоследовательностей
  */
 fun longestIncreasingSubSequence(list: List<Int>): List<Int> {
     val sequences = mutableListOf<LinkedList<Int>>()
