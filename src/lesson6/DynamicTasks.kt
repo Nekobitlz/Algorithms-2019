@@ -2,6 +2,8 @@
 
 package lesson6
 
+import java.util.*
+
 /**
  * Наибольшая общая подпоследовательность.
  * Средняя
@@ -62,9 +64,43 @@ fun longestCommonSubSequence(first: String, second: String): String {
  * Если самых длинных возрастающих подпоследовательностей несколько (как в примере),
  * то вернуть ту, в которой числа расположены раньше (приоритет имеют первые числа).
  * В примере ответами являются 2, 8, 9, 12 или 2, 5, 9, 12 -- выбираем первую из них.
+ *
+ * Трудоемкость: O(n)
+ * Ресурсоемкость: O(n)
  */
 fun longestIncreasingSubSequence(list: List<Int>): List<Int> {
-    TODO()
+    val sequences = mutableListOf<LinkedList<Int>>()
+
+    for (number in list) {
+        val increasingSequence = sequences.filter { it.last < number }
+
+        increasingSequence.map { it.addLast(number) }
+
+        if (increasingSequence.isEmpty()) {
+            val newSequence = LinkedList<Int>().apply { add(number) }
+
+            sequences.add(newSequence)
+        }
+    }
+
+    val result = sequences.maxBy { it.size } ?: LinkedList()
+
+    if (result.size in 2 until list.size) {
+        val headSequence = LinkedList<Int>()
+        val firstIndex = list.indexOf(result.remove())
+
+        for (i in 0..firstIndex) {
+            val number = list[i]
+
+            if (result.first > number && (headSequence.isEmpty() || headSequence.last < number)) {
+                headSequence.addLast(number)
+            }
+        }
+
+        result.addAll(0, headSequence)
+    }
+
+    return result
 }
 
 /**
